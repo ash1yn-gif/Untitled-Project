@@ -1,0 +1,195 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* 2. Remove default margin */
+*:not(dialog) {
+  margin: 0;
+}
+
+/* 3. Enable keyword animations */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    interpolate-size: allow-keywords;
+  }
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  color: white;
+}
+
+/* 6. Improve media defaults */
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* 7. Inherit fonts for form controls */
+input, button, textarea, select {
+  font: inherit;
+}
+
+/* 8. Avoid text overflows */
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+
+/* 9. Improve line wrapping */
+p {
+  text-wrap: pretty;
+}
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+
+/*
+  10. Create a root stacking context
+*/
+#root, #__next {
+  isolation: isolate;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    min-height: 100vh;
+    width: 100vw; 
+    position: relative;
+    font-size: 1.2em;
+}
+
+.container#home {
+    background-image: url("images/background.webp");
+    background-size: cover;
+}
+
+.message {
+    opacity: 0;
+    transform: translateY(15px);
+    animation: message-in 1s ease forwards;
+}
+
+.message:nth-child(2) {
+    animation-delay: 0.35s;
+}
+
+@keyframes message-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#home-button {
+    background: #8b1e2d;
+    color: white;
+    border: none;
+
+    padding: 0.8rem 1.5rem;
+    border-radius: 999px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background-color 0.25s ease;
+}
+
+@keyframes button-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+button:hover {
+    background: #a9273a;
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px rgba(180, 30, 50, 0.35);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+.container#home::before {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    filter: blur(80px);
+
+    animation: drift 8s ease-in-out infinite alternate;
+
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.45),
+            rgba(0, 0, 0, 0.65)
+        );
+
+    pointer-events: none;
+}
+
+@keyframes drift {
+    from {
+        transform: translate(-100px, -50px);
+    }
+
+    to {
+        transform: translate(100px, 50px);
+    }
+}
+
+.container#home > * {
+    position: relative;
+    z-index: 1;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+.tank {
+    display: flex;
+    justify-content: center;
+}
+
+.container#fish-tank {
+    position: relative;
+
+    width: min(90vw, 900px);
+    aspect-ratio: 16 / 9;
+    background-image: url("images/underwater.png");
+    background-size: cover;
+    background-position: center;
+
+    justify-content: flex-start;
+
+}
+
+@media (max-width: 600px) {
+    .aquarium {
+        aspect-ratio: 4 / 5;
+    }
+}
+
+#add-shark {
+    margin: 1em;
+    border-radius: 12px;
+    background-color: rgb(242, 243, 241);
+    border: none    ;
+}
+
+#add-shark:hover {
+    box-shadow: none;
+    cursor: pointer;
+}
