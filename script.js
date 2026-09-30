@@ -1,4 +1,11 @@
+const sharks = [];
 
+function Shark(shark, sharkX, sharkY) {
+    this.img = shark
+    this.sharkX = sharkX;
+    this.sharkY = sharkY;
+
+}
 
 
 const addShark = function () {
@@ -11,30 +18,53 @@ const addShark = function () {
     shark.style.left = "0px";
     shark.style.top = "0px";
     container.appendChild(shark)
+    console.log(shark)
     shark.onload = () => {
-        random()
+        shark = new Shark(shark, 0, 0)
+        console.log(shark)
+        sharks.push(shark)
+        random(shark, shark.sharkX, shark.sharkY)
     }
 }
 
 const randomMovement = function (shark, x, y) {
-    let sharkX = 0;
-    let sharkY = 0;
     const speed = Math.random() * 2 + 1;
     function move() {
-        if (sharkX < x) {
-            sharkX += speed;
-        } else if (sharkX > x) {
-            sharkX -= speed;
-        }       
+        if (shark.sharkX < x) {
+            shark.sharkX += speed;
 
-        if (sharkY < y) {
-            sharkY += speed;
-        } else if (sharkY > y) {
-            sharkY -= speed;
+            if (shark.sharkX > x) {
+                shark.sharkX = x;
+            }
+
+        } else if (shark.sharkX > x) {
+            shark.sharkX -= speed;
+
+            if (shark.sharkX < x) {
+                shark.sharkX = x;
+            }
+        }      
+
+        if (shark.sharkY < y) {
+            shark.sharkY += speed;
+
+            if (shark.sharkY > y) {
+                shark.sharkY = y;
+            }
+
+        } else if (shark.sharkY > y) {
+            shark.sharkY -= speed;
+
+            if (shark.sharkY < y) {
+                shark.sharkY = y;
+            }
         }   
-        shark.style.transform = `translate(${sharkX}px, ${sharkY}px)`
-        if (sharkX != x && sharkY != y) {
+        shark.img.style.transform = `translate(${shark.sharkX}px, ${shark.sharkY}px)`
+        if (shark.sharkX != x || shark.sharkY != y) {
             requestAnimationFrame(move)
+        }
+        else {
+            random(shark.sharkX, shark.sharkY)
         }
     }
     move()
@@ -42,13 +72,13 @@ const randomMovement = function (shark, x, y) {
     return shark;
 }
 
-const random = function () {
+const random = function (shark) {
+
     const container = document.querySelector(".container#fish-tank")
-    const sharks = container.querySelectorAll("img")
     sharks.forEach(shark => {
         randomMovement(
-            shark, Math.random() * (container.clientWidth - shark.offsetWidth),
-            Math.random() * (container.clientHeight - shark.offsetHeight    
+            shark, Math.random() * (container.clientWidth - shark.img.offsetWidth),
+            Math.random() * (container.clientHeight - shark.img.offsetHeight  
         ))
     })    
 }
