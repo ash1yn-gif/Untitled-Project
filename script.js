@@ -1,89 +1,69 @@
+const tank = document.querySelector("#fish-tank");
 const sharks = [];
+let tankW = tank.clientWidth;
+let tankH = tank.clientHeight;
 
-function Shark(shark, sharkX, sharkY) {
-    this.img = shark
-    this.sharkX = sharkX;
-    this.sharkY = sharkY;
+window.addEventListener("resize", () => {
+  tankW = tank.clientWidth;
+  tankH = tank.clientHeight;
+});
 
-}
+class Shark {
+  constructor(img) {
+    this.img = img;
+    this.w = img.offsetWidth;
+    this.h = img.offsetHeight;
+    this.x = 0;
+    this.y = 0;
+    this.speed = 60 + Math.random() * 120; // pixels per second
+    this.facing = 1;                        // 1 = right, -1 = left
+    this.pickTarget();
+  }
 
+  pickTarget() {
+    this.tx = Math.random() * (tankW - this.w);
+    this.ty = Math.random() * (tankH - this.h);
+  }
 
-const addShark = function () {
-    const container = document.querySelector(".container#fish-tank");
-    let shark = document.createElement("img");
-    shark.src = "images/sharky_01.png"
-    shark.style.top = "10em"
-    shark.style.width = "6em"
-    shark.style.position = "absolute"
-    shark.style.left = "0px";
-    shark.style.top = "0px";
-    container.appendChild(shark)
-    console.log(shark)
-    shark.onload = () => {
-        shark = new Shark(shark, 0, 0)
-        console.log(shark)
-        sharks.push(shark)
-        random(shark, shark.sharkX, shark.sharkY)
+  update(dt) {
+    const dx = this.tx - this.x;
+    const dy = this.ty - this.y;
+    const dist = Math.hypot(dx, dy);
+    const step = this.speed * dt;
+
+    if (dist <= step) {
+      // arrived
+      this.x = this.tx;
+      this.y = this.ty;
+      this.pickTarget();
+    } else {
+      // move straight toward the target
+      this.x += (dx / dist) * step;
+      this.y += (dy / dist) * step;
+      if (dx !== 0) this.facing = Math.sign(dx);
     }
+
+    this.img.style.transform = `translate(${this.x}px, ${this.y}px) scaleX(${this.facing})`;
+  }
 }
 
-const randomMovement = function (shark, x, y) {
-    const speed = Math.random() * 2 + 1;
-    function move() {
-        if (shark.sharkX < x) {
-            shark.sharkX += speed;
-
-            if (shark.sharkX > x) {
-                shark.sharkX = x;
-            }
-
-        } else if (shark.sharkX > x) {
-            shark.sharkX -= speed;
-
-            if (shark.sharkX < x) {
-                shark.sharkX = x;
-            }
-        }      
-
-        if (shark.sharkY < y) {
-            shark.sharkY += speed;
-
-            if (shark.sharkY > y) {
-                shark.sharkY = y;
-            }
-
-        } else if (shark.sharkY > y) {
-            shark.sharkY -= speed;
-
-            if (shark.sharkY < y) {
-                shark.sharkY = y;
-            }
-        }   
-        shark.img.style.transform = `translate(${shark.sharkX}px, ${shark.sharkY}px)`
-        if (shark.sharkX != x || shark.sharkY != y) {
-            requestAnimationFrame(move)
-        }
-        else {
-            random(shark.sharkX, shark.sharkY)
-        }
-    }
-    move()
-    
-    return shark;
+function addShark() {
+  const img = new Image();
+  img.src = "images/sharky_01.png";
+  img.style.cssText = "position:absolute; left:0; top:0; width:6em; will-change:transform;";
+  img.onload = () => {
+    tank.appendChild(img);          // append after load so sizes are known
+    sharks.push(new Shark(img));
+  };
 }
 
-const random = function (shark) {
-
-    const container = document.querySelector(".container#fish-tank")
-    sharks.forEach(shark => {
-        randomMovement(
-            shark, Math.random() * (container.clientWidth - shark.img.offsetWidth),
-            Math.random() * (container.clientHeight - shark.img.offsetHeight  
-        ))
-    })    
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.1); // seconds, capped after tab switches
+  last = now;
+  for (const s of sharks) s.update(dt);
+  requestAnimationFrame(loop);
 }
+requestAnimationFrame(loop);
 
-
-const button = document.querySelector("button")
-button.addEventListener("click", addShark)
-
+document.querySelector("button").addEventListener("click", addShark);
